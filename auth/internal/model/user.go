@@ -5,14 +5,21 @@ import (
 	"time"
 )
 
-type Note struct {
+type User struct {
 	ID        int64
-	Info      NoteInfo
+	Info      UserInfo
 	CreatedAt time.Time
 	UpdatedAt sql.NullTime
 }
 
-type NoteInfo struct {
-	Title   string
-	Content string
+type UserInfo struct {
+	Name     string
+	Email    string
+	Password string
+	Role     string
+}
+
+type UserUpdate struct {
+	Name  *string
+	Email *string
 }

@@ -1,4 +1,4 @@
-package note
+package user
 
 import (
 	"github.com/MercerMorning/go_example/auth/internal/client/db"
@@ -7,16 +7,16 @@ import (
 )
 
 type serv struct {
-	noteRepository repository.UserRepository
+	userRepository repository.UserRepository
 	txManager      db.TxManager
 }
 
 func NewService(
-	noteRepository repository.UserRepository,
+	userRepository repository.UserRepository,
 	txManager db.TxManager,
 ) service.UserService {
 	return &serv{
-		noteRepository: noteRepository,
+		userRepository: userRepository,
 		txManager:      txManager,
 	}
 }

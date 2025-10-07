@@ -1,36 +1,76 @@
 package converter
 
 import (
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/MercerMorning/go_example/auth/internal/model"
-	desc "github.com/olezhek28/microservices_course/week_3/pkg/note_v1"
+	desc "github.com/MercerMorning/go_example/auth/pkg/user_v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func ToNoteFromService(note *model.Note) *desc.Note {
-	var updatedAt *timestamppb.Timestamp
-	if note.UpdatedAt.Valid {
-		updatedAt = timestamppb.New(note.UpdatedAt.Time)
+// ToUserInfoFromDesc конвертирует CreateRequest в UserInfo
+func ToUserInfoFromDesc(req *desc.CreateRequest) *model.UserInfo {
+	return &model.UserInfo{
+		Name:     req.GetName(),
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
+		Role:     req.GetRole().String(),
+	}
+}
+
+// ToUserUpdateFromDesc конвертирует UpdateRequest в UserUpdate
+func ToUserUpdateFromDesc(req *desc.UpdateRequest) *model.UserUpdate {
+	update := &model.UserUpdate{}
+
+	if req.GetName() != nil {
+		update.Name = &req.GetName().Value
 	}
 
-	return &desc.Note{
-		Id:        note.ID,
-		Info:      ToNoteInfoFromService(note.Info),
-		CreatedAt: timestamppb.New(note.CreatedAt),
+	if req.GetEmail() != nil {
+		update.Email = &req.GetEmail().Value
+	}
+
+	return update
+}
+
+// ToDescFromUser конвертирует User в GetResponse
+func ToDescFromUser(user *model.User) *desc.GetResponse {
+	var updatedAt *timestamppb.Timestamp
+	if user.UpdatedAt.Valid {
+		updatedAt = timestamppb.New(user.UpdatedAt.Time)
+	}
+
+	role := desc.Role_USER
+	if user.Info.Role == "ADMIN" {
+		role = desc.Role_ADMIN
+	}
+
+	return &desc.GetResponse{
+		Id:        user.ID,
+		Name:      user.Info.Name,
+		Email:     user.Info.Email,
+		Role:      role,
+		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: updatedAt,
 	}
 }
 
-func ToNoteInfoFromService(info model.NoteInfo) *desc.NoteInfo {
-	return &desc.NoteInfo{
-		Title:   info.Title,
-		Content: info.Content,
+// ToCreateResponseFromID конвертирует ID в CreateResponse
+func ToCreateResponseFromID(id int64) *desc.CreateResponse {
+	return &desc.CreateResponse{
+		Id: id,
 	}
 }
 
-func ToNoteInfoFromDesc(info *desc.NoteInfo) *model.NoteInfo {
-	return &model.NoteInfo{
-		Title:   info.Title,
-		Content: info.Content,
+// ToUpdateRequestFromDesc создает UpdateRequest из GetResponse (для внутреннего использования)
+func ToUpdateRequestFromDesc(req *desc.UpdateRequest) *model.UserUpdate {
+	update := &model.UserUpdate{}
+
+	if req.GetName() != nil {
+		update.Name = &req.GetName().Value
 	}
+
+	if req.GetEmail() != nil {
+		update.Email = &req.GetEmail().Value
+	}
+
+	return update
 }

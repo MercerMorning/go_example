@@ -11,3 +11,7 @@ func (s *serv) Update(ctx context.Context, id int64, info *model.UserUpdate) err
 		return s.userRepository.Update(ctx, id, info)
 	})
 }
+
+
+
+

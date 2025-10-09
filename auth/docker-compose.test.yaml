@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  postgres-test:
+    image: postgres:14-alpine3.17
+    environment:
+      POSTGRES_DB: auth_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "54322:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_test_data:

@@ -69,3 +69,5 @@ export TEST_PG_DSN="postgres://postgres:postgres@localhost:54321/auth_test?sslmo
 - PostgreSQL 14+
 - Docker (для автоматических тестов)
 - testify (автоматически устанавливается)
+
+

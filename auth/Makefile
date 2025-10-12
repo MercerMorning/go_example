@@ -5,7 +5,7 @@ install-golangci-lint:
 
 lint:
 	$(LOCAL_BIN)/golangci-lint run ./... --config .golangci.pipeline.yaml
-	
+
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.34.2
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.4
@@ -26,7 +26,8 @@ generate-user-api:
 	--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 	--openapiv2_out=allow_merge=true,merge_file_name=api:pkg/swagger \
 	--plugin=protoc-gen-openapiv2=bin/protoc-gen-openapiv2 \
-	api/user_v1/user.proto
+	api/user_v1/user.proto \
+	--validate_out lang=go:pkg/user_v1 --validate_opt=paths=source_relative
 
 # Тестирование
 test-unit:

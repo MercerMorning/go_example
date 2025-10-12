@@ -6,6 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 option go_package = "github.com/MercerMorning/go_example/auth/grpc/pkg/user_v1;user_v1";
 
@@ -27,7 +28,7 @@ enum Role {
 }
 
 message CreateRequest {
-  string name = 1;
+  string name = 1 [(validate.rules).string = {min_len: 1, max_len: 50}];
   string email = 2;
   string password = 3;
   string password_confirm = 4;

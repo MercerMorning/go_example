@@ -71,3 +71,5 @@ export TEST_PG_DSN="postgres://postgres:postgres@localhost:54321/auth_test?sslmo
 - testify (автоматически устанавливается)
 
 
+
+

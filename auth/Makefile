@@ -75,3 +75,33 @@ vendor-proto:
 			mv vendor.protogen/openapiv2/protoc-gen-openapiv2/options/*.proto vendor.protogen/protoc-gen-openapiv2/options &&\
 			rm -rf vendor.protogen/openapiv2 ;\
 		fi
+
+# Миграции
+migrate-up:
+	@echo "Running migrations up..."
+	cd cmd/migrate && go run main.go -command=up
+
+migrate-down:
+	@echo "Running migrations down..."
+	cd cmd/migrate && go run main.go -command=down
+
+migrate-force:
+	@echo "Forcing migration version..."
+	@read -p "Enter version number: " version; \
+	cd cmd/migrate && go run main.go -command=force -version=$$version
+
+migrate-version:
+	@echo "Getting migration version..."
+	cd cmd/migrate && go run main.go -command=version
+
+migrate-create:
+	@echo "Creating new migration..."
+	@read -p "Enter migration name: " name; \
+	timestamp=$$(date +%Y%m%d%H%M%S); \
+	up_file="migrations/$${timestamp}_$${name}.up.sql"; \
+	down_file="migrations/$${timestamp}_$${name}.down.sql"; \
+	echo "-- +migrate Up" > $$up_file; \
+	echo "-- Add your migration here" >> $$up_file; \
+	echo "-- +migrate Down" > $$down_file; \
+	echo "-- Add your rollback here" >> $$down_file; \
+	echo "Created migration files: $$up_file and $$down_file"

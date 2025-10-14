@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -18,7 +19,11 @@ import (
 	"github.com/MercerMorning/go_example/auth/internal/config"
 	"github.com/MercerMorning/go_example/auth/internal/interceptor"
 	"github.com/MercerMorning/go_example/auth/internal/metric"
+	"github.com/MercerMorning/go_example/auth/internal/tracing"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/natefinch/lumberjack"
+	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
 
@@ -234,23 +239,55 @@ func (a *App) initSentry(_ context.Context) error {
 }
 
 func (a *App) initLogger(_ context.Context) error {
-	zapLog, err := zap.NewProduction()
+	_, err := zap.NewProduction()
 	if err != nil {
 		return err
 	}
 
 	// Создаем Sentry core если Sentry включен
 	sentryConfig := config.NewSentryConfig()
-	var core zapcore.Core = zapLog.Core()
+	// var core zapcore.Core = zapLog.Core()
 
 	if sentryConfig.IsEnabled() {
-		sentryCore := logger.NewSentryCore(zapLog.Core(), zapcore.ErrorLevel)
-		core = sentryCore
+		// sentryCore := logger.NewSentryCore(zapLog.Core(), zapcore.ErrorLevel)
+		// core = sentryCore
 	}
 
-	logger.Init(core)
+	logger.Init(getCore(getAtomicLevel()))
 
 	return nil
+}
+
+func getCore(level zap.AtomicLevel) zapcore.Core {
+	stdout := zapcore.AddSync(os.Stdout)
+
+	file := zapcore.AddSync(&lumberjack.Logger{
+		Filename:   "logs/app.log",
+		MaxSize:    10, // megabytes
+		MaxBackups: 3,
+		MaxAge:     7, // days
+	})
+
+	productionCfg := zap.NewProductionEncoderConfig()
+	productionCfg.TimeKey = "timestamp"
+	productionCfg.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	developmentCfg := zap.NewDevelopmentEncoderConfig()
+	developmentCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	consoleEncoder := zapcore.NewConsoleEncoder(developmentCfg)
+	fileEncoder := zapcore.NewJSONEncoder(productionCfg)
+
+	return zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, stdout, level),
+		zapcore.NewCore(fileEncoder, file, level),
+	)
+}
+
+func getAtomicLevel() zap.AtomicLevel {
+	var level zapcore.Level
+
+	return zap.NewAtomicLevelAt(level)
 }
 
 func (a *App) initConfig(_ context.Context) error {
@@ -268,6 +305,7 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
+	tracing.Init(logger.Get(), "auth")
 	// a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
 	logger.Info("init grpc server")
 
@@ -277,6 +315,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 			grpcMiddleware.ChainUnaryServer(
 				interceptor.LogInterceptor,
 				interceptor.MetricsInterceptor,
+				interceptor.ServerTracingInterceptor,
+				otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer()),
 			),
 		),
 	)

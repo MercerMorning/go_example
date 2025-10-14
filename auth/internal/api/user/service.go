@@ -8,10 +8,12 @@ import (
 type Implementation struct {
 	desc.UnimplementedUserV1Server
 	userService service.UserService
+	userClient  desc.UserV1Client
 }
 
-func NewImplementation(userService service.UserService) *Implementation {
+func NewImplementation(userService service.UserService, userClient desc.UserV1Client) *Implementation {
 	return &Implementation{
 		userService: userService,
+		userClient:  userClient,
 	}
 }

@@ -1,0 +1,26 @@
+{"level":"info","timestamp":"2025-10-14T18:40:36.128+0300","msg":"init grpc server"}
+{"level":"info","timestamp":"2025-10-14T18:40:36.147+0300","msg":"gnom"}
+{"level":"info","timestamp":"2025-10-14T18:41:18.881+0300","msg":"fdfsdf"}
+{"level":"error","timestamp":"2025-10-14T18:41:18.912+0300","msg":"failed executing code inside transaction: ERROR: duplicate key value violates unique constraint \"users_email_key\" (SQLSTATE 23505)","method":"/user_v1.UserV1/Create","req":"name:\"cupidatat ullamco incididunt\"  email:\"sint anim cillum dolore\"  password:\"in\"  password_confirm:\"do\"  role:ADMIN"}
+{"level":"info","timestamp":"2025-10-14T18:41:18.913+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"cupidatat ullamco incididunt\"  email:\"sint anim cillum dolore\"  password:\"in\"  password_confirm:\"do\"  role:ADMIN","res":"<nil>","duration":0.031778422}
+{"level":"info","timestamp":"2025-10-14T18:41:30.358+0300","msg":"fdfsdf"}
+{"level":"info","timestamp":"2025-10-14T18:41:30.389+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"labore\"  email:\"in consequat\"  password:\"laborum sunt in nulla aute\"  password_confirm:\"cupidatat incididunt\"","res":"id:11","duration":0.030306479}
+{"level":"info","timestamp":"2025-10-14T18:47:27.814+0300","msg":"init grpc server"}
+{"level":"info","timestamp":"2025-10-14T18:47:27.827+0300","msg":"gnom"}
+{"level":"info","timestamp":"2025-10-14T18:49:17.301+0300","msg":"init grpc server"}
+{"level":"info","timestamp":"2025-10-14T18:49:17.314+0300","msg":"gnom"}
+{"level":"info","timestamp":"2025-10-14T18:50:02.976+0300","msg":"init grpc server"}
+{"level":"info","timestamp":"2025-10-14T18:50:02.988+0300","msg":"gnom"}
+{"level":"info","timestamp":"2025-10-14T18:50:08.847+0300","msg":"fdfsdf"}
+{"level":"error","timestamp":"2025-10-14T18:50:08.857+0300","msg":"failed executing code inside transaction: ERROR: duplicate key value violates unique constraint \"users_email_key\" (SQLSTATE 23505)","method":"/user_v1.UserV1/Create","req":"name:\"labore\"  email:\"in consequat\"  password:\"laborum sunt in nulla aute\"  password_confirm:\"cupidatat incididunt\""}
+{"level":"info","timestamp":"2025-10-14T18:50:08.857+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"labore\"  email:\"in consequat\"  password:\"laborum sunt in nulla aute\"  password_confirm:\"cupidatat incididunt\"","res":"<nil>","duration":0.009822203}
+{"level":"info","timestamp":"2025-10-14T18:50:13.105+0300","msg":"fdfsdf"}
+{"level":"info","timestamp":"2025-10-14T18:50:13.119+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"labore\"  email:\"aute irure veniam nostrud non\"  password:\"exercitation eiusmod in\"  password_confirm:\"sint\"  role:ADMIN","res":"id:13","duration":0.014173866}
+{"level":"info","timestamp":"2025-10-14T18:51:46.249+0300","msg":"fdfsdf"}
+{"level":"info","timestamp":"2025-10-14T18:51:46.263+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"ex sit sint adipisicing Duis\"  email:\"laboris velit\"  password:\"cillum eu veniam adipisicing ut\"  password_confirm:\"voluptate aliqua dolore\"","res":"id:14","duration":0.013380707}
+{"level":"info","timestamp":"2025-10-14T18:53:59.734+0300","msg":"fdfsdf"}
+{"level":"info","timestamp":"2025-10-14T18:53:59.769+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"occaecat cupidatat\"  email:\"qui\"  password:\"mollit\"  password_confirm:\"in do\"  role:ADMIN","res":"id:15","duration":0.035702526}
+{"level":"info","timestamp":"2025-10-14T18:58:27.769+0300","msg":"init grpc server"}
+{"level":"info","timestamp":"2025-10-14T18:58:27.987+0300","msg":"gnom"}
+{"level":"info","timestamp":"2025-10-14T18:58:33.594+0300","msg":"fdfsdf"}
+{"level":"info","timestamp":"2025-10-14T18:58:33.749+0300","msg":"request","method":"/user_v1.UserV1/Create","req":"name:\"laboris dolor aliqua\"  email:\"quis eu Duis\"  password:\"dolore fugiat tempor in\"  password_confirm:\"aliqua amet laborum labore\"  role:ADMIN","res":"id:16","duration":0.15528595}

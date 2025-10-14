@@ -10,8 +10,12 @@ import (
 	"github.com/MercerMorning/go_example/auth/internal/client/db/transaction"
 	"github.com/MercerMorning/go_example/auth/internal/closer"
 	"github.com/MercerMorning/go_example/auth/internal/config"
+	"github.com/MercerMorning/go_example/auth/internal/interceptor"
 	"github.com/MercerMorning/go_example/auth/internal/repository"
 	"github.com/MercerMorning/go_example/auth/internal/service"
+	desc "github.com/MercerMorning/go_example/auth/pkg/user_v1"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	userRepository "github.com/MercerMorning/go_example/auth/internal/repository/user"
 	userService "github.com/MercerMorning/go_example/auth/internal/service/user"
@@ -27,6 +31,7 @@ type serviceProvider struct {
 	userRepository repository.UserRepository
 
 	userService service.UserService
+	userClient  desc.UserV1Client
 
 	userImpl *user.Implementation
 }
@@ -120,9 +125,27 @@ func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	return s.userService
 }
 
+func (s *serviceProvider) UserClient(ctx context.Context) desc.UserV1Client {
+	if s.userClient == nil {
+		// Подключаемся к other_service на порту 50052 с клиентским интерцептором для трейсинга
+		conn, err := grpc.Dial("localhost:50052", 
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(interceptor.ClientTracingInterceptor),
+		)
+		if err != nil {
+			log.Fatalf("failed to connect to other_service: %v", err)
+		}
+
+		s.userClient = desc.NewUserV1Client(conn)
+		closer.Add(conn.Close)
+	}
+
+	return s.userClient
+}
+
 func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 	if s.userImpl == nil {
-		s.userImpl = user.NewImplementation(s.UserService(ctx))
+		s.userImpl = user.NewImplementation(s.UserService(ctx), s.UserClient(ctx))
 	}
 
 	return s.userImpl

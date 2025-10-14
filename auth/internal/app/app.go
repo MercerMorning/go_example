@@ -7,16 +7,21 @@ import (
 	"net/http"
 	"sync"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
 	"github.com/MercerMorning/go_example/auth/internal/closer"
 	"github.com/MercerMorning/go_example/auth/internal/config"
+	"github.com/MercerMorning/go_example/auth/internal/interceptor"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 
 	desc "github.com/MercerMorning/go_example/auth/pkg/user_v1"
+
+	"github.com/MercerMorning/go_example/auth/internal/logger"
+	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 )
 
 type App struct {
@@ -90,6 +95,7 @@ func (a *App) runHTTPServer() error {
 
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
+		a.initLogger,
 		a.initConfig,
 		a.initServiceProvider,
 		a.initGRPCServer,
@@ -133,6 +139,17 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	return nil
 }
 
+func (a *App) initLogger(_ context.Context) error {
+	zapLog, err := zap.NewProduction()
+	if err != nil {
+		return err
+	}
+
+	logger.Init(zapLog.Core())
+
+	return nil
+}
+
 func (a *App) initConfig(_ context.Context) error {
 	err := config.Load(".env")
 	if err != nil {
@@ -148,7 +165,16 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	// a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+
+	a.grpcServer = grpc.NewServer(
+		// grpc.Creds(insecure.NewCredentials(),
+		grpc.UnaryInterceptor(
+			grpcMiddleware.ChainUnaryServer(
+				interceptor.LogInterceptor,
+			),
+		),
+	)
 
 	reflection.Register(a.grpcServer)
 
